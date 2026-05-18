@@ -77,52 +77,42 @@ def me(current_user: User = Depends(get_current_user)):
 
 @router.get("/google")
 def google_login():
-    """
-    Redirects the user to Google's OAuth consent screen.
-    Requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to be set.
-    """
     if not settings.GOOGLE_CLIENT_ID:
-        raise HTTPException(
-            status_code=501,
-            detail=(
-                "Google OAuth is not configured. "
-                "Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your .env file."
-            ),
+        raise HTTPException(status_code=501, detail="Google OAuth is not configured.")
+
+    params = {
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "select_account",
+    }
+
+    from urllib.parse import urlencode
+    google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
+
+    return RedirectResponse(url=google_auth_url, status_code=302)
+
+
+@router.get("/google/callback")
+def google_callback(
+    code: str = None,
+    error: str = None,
+    db: Session = Depends(get_db)
+):
+    if error:
+        return RedirectResponse(
+            url=f"{settings.FRONTEND_URL}?auth_error={error}",
+            status_code=302
         )
 
-    from authlib.integrations.starlette_client import OAuth
-    from starlette.config import Config
-
-    config = Config(environ={
-        "GOOGLE_CLIENT_ID": settings.GOOGLE_CLIENT_ID,
-        "GOOGLE_CLIENT_SECRET": settings.GOOGLE_CLIENT_SECRET,
-    })
-    oauth = OAuth(config)
-    oauth.register(
-        name="google",
-        server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
-        client_kwargs={"scope": "openid email profile"},
-    )
-
-    redirect_uri = settings.GOOGLE_REDIRECT_URI
-    # Note: In a real app use a proper Request object from Starlette
-    return RedirectResponse(
-        url=(
-            "https://accounts.google.com/o/oauth2/v2/auth"
-            f"?client_id={settings.GOOGLE_CLIENT_ID}"
-            f"&redirect_uri={redirect_uri}"
-            "&response_type=code"
-            "&scope=openid+email+profile"
+    if not code:
+        return RedirectResponse(
+            url=f"{settings.FRONTEND_URL}?auth_error=no_code",
+            status_code=302
         )
-    )
 
-
-@router.get("/google/callback", response_model=Token)
-def google_callback(code: str, db: Session = Depends(get_db)):
-    """
-    Google redirects here after the user grants permission.
-    Exchanges the code for user info, then creates or looks up the local user.
-    """
     if not settings.GOOGLE_CLIENT_ID:
         raise HTTPException(status_code=501, detail="Google OAuth is not configured.")
 
@@ -140,14 +130,19 @@ def google_callback(code: str, db: Session = Depends(get_db)):
         },
     )
     token_data = token_resp.json()
-    if "error" in token_data:
-        raise HTTPException(status_code=400, detail=token_data["error"])
 
-    # Fetch user info
-    user_info = httpx.get(
+    if "error" in token_data:
+        return RedirectResponse(
+            url=f"{settings.FRONTEND_URL}?auth_error={token_data['error']}",
+            status_code=302
+        )
+
+    # Fetch user info from Google
+    user_info_resp = httpx.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {token_data['access_token']}"},
-    ).json()
+    )
+    user_info = user_info_resp.json()
 
     google_id = user_info["id"]
     email = user_info["email"]
@@ -158,12 +153,16 @@ def google_callback(code: str, db: Session = Depends(get_db)):
     if not user:
         user = db.query(User).filter(User.email == email).first()
         if user:
-            user.google_id = google_id  # Link existing account
+            user.google_id = google_id
         else:
             user = User(name=name, email=email, google_id=google_id)
             db.add(user)
     db.commit()
     db.refresh(user)
 
-    token = create_access_token({"sub": str(user.id)})
-    return Token(access_token=token, user=UserResponse.model_validate(user))
+    access_token = create_access_token({"sub": str(user.id)})
+
+    return RedirectResponse(
+        url=f"{settings.FRONTEND_URL}?access_token={access_token}",
+        status_code=302
+    )

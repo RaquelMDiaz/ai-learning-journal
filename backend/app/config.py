@@ -4,10 +4,11 @@ app/config.py
 Centralised settings loaded from environment variables.
 Copy .env.example to .env and fill in your values.
 """
-
 import os
+from dotenv import load_dotenv
 from functools import lru_cache
 
+load_dotenv()  # loads .env before os.getenv() calls are made
 
 class Settings:
     # ── JWT ──────────────────────────────────────────────────────────────────

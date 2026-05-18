@@ -424,10 +424,39 @@ function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g
 
 // INIT
 async function init() {
-  document.getElementById('lang-select').value=currentLang;
+  document.getElementById('lang-select').value = currentLang;
   await loadTranslations(currentLang);
   updateNav();
-  if (token&&currentUser){await loadSessions();showView('journal');applyTranslations();}
+
+  // Handle Google OAuth redirect
+  const urlParams = new URLSearchParams(window.location.search);
+  const googleToken = urlParams.get('access_token');
+  if (googleToken) {
+    token = googleToken;
+    try {
+      const res = await apiFetch('/auth/me');
+      const user = await res.json();
+      currentUser = user;
+      localStorage.setItem('jwt', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      window.history.replaceState({}, '', window.location.pathname);
+      updateNav();
+      await loadSessions();
+      showView('journal');
+      applyTranslations();
+    } catch {
+      showErr('auth-error', t('error_auth'));
+      showView('auth');
+    }
+    return;
+  }
+
+  // Normal init — already logged in
+  if (token && currentUser) {
+    await loadSessions();
+    showView('journal');
+    applyTranslations();
+  }
 }
 init();
 </script>
