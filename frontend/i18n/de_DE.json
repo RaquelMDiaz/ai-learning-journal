@@ -1,0 +1,46 @@
+{
+  "lang": "de_DE",
+  "langLabel": "Deutsch (Deutschland)",
+
+  "nav_journal": "Mein Journal",
+  "nav_contact": "Kontakt",
+  "nav_logout": "Abmelden",
+  "nav_login": "Anmelden",
+
+  "auth_welcome": "Willkommen zurück",
+  "auth_create": "Konto erstellen",
+  "auth_name": "Vollständiger Name",
+  "auth_email": "E-Mail-Adresse",
+  "auth_password": "Passwort",
+  "auth_login_btn": "Anmelden",
+  "auth_register_btn": "Konto erstellen",
+  "auth_switch_register": "Noch kein Konto? Jetzt erstellen",
+  "auth_switch_login": "Bereits ein Konto? Anmelden",
+  "auth_google_btn": "Mit Google fortfahren",
+  "auth_or": "oder",
+
+  "journal_greeting": "Hallo, {name}",
+  "journal_new_session": "Neue Sitzung",
+  "journal_topic_placeholder": "Was möchtest du heute lernen?",
+  "journal_start_btn": "Starten",
+  "journal_no_sessions": "Noch keine Sitzungen. Starte deine erste oben.",
+  "journal_delete": "Löschen",
+  "journal_input_placeholder": "Frag etwas…",
+  "journal_send": "Senden",
+  "journal_back": "← Zurück zu den Sitzungen",
+  "journal_you": "Du",
+  "journal_assistant": "Claude",
+
+  "contact_title": "Schreib uns",
+  "contact_name": "Dein Name",
+  "contact_email": "Deine E-Mail",
+  "contact_message": "Deine Nachricht",
+  "contact_send": "Nachricht senden",
+  "contact_success": "Nachricht gesendet – vielen Dank!",
+  "contact_error_name": "Bitte gib deinen Namen ein.",
+  "contact_error_email": "Bitte gib eine gültige E-Mail-Adresse ein.",
+  "contact_error_message": "Die Nachricht muss mindestens 10 Zeichen lang sein.",
+
+  "error_network": "Server nicht erreichbar. Läuft er?",
+  "error_auth": "Sitzung abgelaufen. Bitte erneut anmelden."
+}

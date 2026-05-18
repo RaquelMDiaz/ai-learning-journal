@@ -1,0 +1,46 @@
+{
+  "lang": "en_GB",
+  "langLabel": "English (UK)",
+
+  "nav_journal": "My Journal",
+  "nav_contact": "Contact",
+  "nav_logout": "Log out",
+  "nav_login": "Log in",
+
+  "auth_welcome": "Welcome back",
+  "auth_create": "Create an account",
+  "auth_name": "Full name",
+  "auth_email": "Email address",
+  "auth_password": "Password",
+  "auth_login_btn": "Log in",
+  "auth_register_btn": "Create account",
+  "auth_switch_register": "No account yet? Create one",
+  "auth_switch_login": "Already have an account? Log in",
+  "auth_google_btn": "Continue with Google",
+  "auth_or": "or",
+
+  "journal_greeting": "Hello, {name}",
+  "journal_new_session": "New session",
+  "journal_topic_placeholder": "What do you want to learn today?",
+  "journal_start_btn": "Start",
+  "journal_no_sessions": "No sessions yet. Start your first one above.",
+  "journal_delete": "Delete",
+  "journal_input_placeholder": "Ask something…",
+  "journal_send": "Send",
+  "journal_back": "← Back to sessions",
+  "journal_you": "You",
+  "journal_assistant": "Claude",
+
+  "contact_title": "Get in touch",
+  "contact_name": "Your name",
+  "contact_email": "Your email",
+  "contact_message": "Your message",
+  "contact_send": "Send message",
+  "contact_success": "Message sent — thank you!",
+  "contact_error_name": "Please enter your name.",
+  "contact_error_email": "Please enter a valid email address.",
+  "contact_error_message": "Message must be at least 10 characters.",
+
+  "error_network": "Could not reach the server. Is it running?",
+  "error_auth": "Session expired. Please log in again."
+}

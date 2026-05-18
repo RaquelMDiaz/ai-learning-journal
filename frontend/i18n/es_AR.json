@@ -1,0 +1,46 @@
+{
+  "lang": "es_AR",
+  "langLabel": "Español (Argentina)",
+
+  "nav_journal": "Mi diario",
+  "nav_contact": "Contacto",
+  "nav_logout": "Cerrar sesión",
+  "nav_login": "Iniciar sesión",
+
+  "auth_welcome": "Bienvenido de nuevo",
+  "auth_create": "Crear una cuenta",
+  "auth_name": "Nombre completo",
+  "auth_email": "Correo electrónico",
+  "auth_password": "Contraseña",
+  "auth_login_btn": "Iniciar sesión",
+  "auth_register_btn": "Crear cuenta",
+  "auth_switch_register": "¿No tenés cuenta? Creá una",
+  "auth_switch_login": "¿Ya tenés cuenta? Iniciá sesión",
+  "auth_google_btn": "Continuar con Google",
+  "auth_or": "o",
+
+  "journal_greeting": "Hola, {name}",
+  "journal_new_session": "Nueva sesión",
+  "journal_topic_placeholder": "¿Qué querés aprender hoy?",
+  "journal_start_btn": "Empezar",
+  "journal_no_sessions": "Todavía no hay sesiones. ¡Empezá tu primera arriba!",
+  "journal_delete": "Eliminar",
+  "journal_input_placeholder": "Preguntá algo…",
+  "journal_send": "Enviar",
+  "journal_back": "← Volver a las sesiones",
+  "journal_you": "Vos",
+  "journal_assistant": "Claude",
+
+  "contact_title": "Contactanos",
+  "contact_name": "Tu nombre",
+  "contact_email": "Tu correo",
+  "contact_message": "Tu mensaje",
+  "contact_send": "Enviar mensaje",
+  "contact_success": "¡Mensaje enviado, muchas gracias!",
+  "contact_error_name": "Por favor ingresá tu nombre.",
+  "contact_error_email": "Por favor ingresá un correo electrónico válido.",
+  "contact_error_message": "El mensaje debe tener al menos 10 caracteres.",
+
+  "error_network": "No se pudo contactar el servidor. ¿Está corriendo?",
+  "error_auth": "La sesión expiró. Por favor iniciá sesión de nuevo."
+}
