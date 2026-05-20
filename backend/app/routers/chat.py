@@ -1,13 +1,13 @@
 """
 routers/chat.py
 ---------------
-AI chat endpoint — uses Google Gemini, saves full conversation history per session.
+AI chat endpoint — uses Groq, saves full conversation history per session.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-import google.generativeai as genai
+from groq import Groq
 
 from app.database import get_db
 from app.models.session import JournalSession
@@ -47,8 +47,8 @@ def chat(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
 
-    if not settings.GEMINI_API_KEY:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not set.")
+    if not settings.GROQ_API_KEY:
+        raise HTTPException(status_code=500, detail="GROQ_API_KEY is not set.")
 
     # Save user message
     user_msg = Message(session_id=session_id, role="user", content=payload.content)
@@ -63,33 +63,31 @@ def chat(
         .all()
     )
 
-    # Gemini uses 'model' instead of 'assistant' for the AI role
-    # and requires history and the new message to be separated
-    gemini_history = [
+    # Build messages list for Groq (same format as OpenAI)
+    messages = [
         {
-            "role": "user" if m.role == "user" else "model",
-            "parts": [m.content]
+            "role": "system",
+            "content": (
+                f"You are a helpful learning assistant for {current_user.name}. "
+                f"The topic of this journal session is: '{session.topic}'. "
+                "Help the user understand, explore, and reflect on this topic."
+            )
         }
-        for m in history[:-1]  # all messages except the last (which we just added)
+    ] + [
+        {"role": m.role, "content": m.content}
+        for m in history
     ]
 
-    # Configure Gemini
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash",
-        system_instruction=(
-            f"You are a helpful learning assistant for {current_user.name}. "
-            f"The topic of this journal session is: '{session.topic}'. "
-            "Help the user understand, explore, and reflect on this topic."
-        )
+    # Call Groq
+    client = Groq(api_key=settings.GROQ_API_KEY)
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=messages,
+        max_tokens=1024,
     )
+    reply_text = response.choices[0].message.content
 
-    # Start chat with history and send the latest message
-    chat_session = model.start_chat(history=gemini_history)
-    response = chat_session.send_message(payload.content)
-    reply_text = response.text
-
-    # Save Gemini's reply
+    # Save reply
     assistant_msg = Message(session_id=session_id, role="assistant", content=reply_text)
     db.add(assistant_msg)
     db.commit()

@@ -1,12 +1,12 @@
 # AI Learning Journal
 
-A full-stack web application built for learning and practising **FastAPI** and **Python backend development**. Users can create an account, start AI-powered learning journal sessions on any topic, and chat with Claude (Anthropic's AI) — with the full conversation history saved to a database. A contact form is also included.
+A full-stack web application built for learning and practising **FastAPI** and **Python backend development**. Users can create an account, start AI-powered learning journal sessions on any topic, and chat with Groq — with the full conversation history saved to a database. A contact form is also included.
 
 ---
 
 ## Features
 
-- **AI-powered journal** — start a session on any topic and chat with Claude; full conversation history is preserved across sessions
+- **AI-powered journal** — start a session on any topic and chat with Groq; full conversation history is preserved across sessions
 - **User authentication** — register and log in with email/password (JWT-based); Google OAuth is scaffolded and activates once credentials are configured
 - **Contact form** — with frontend and backend validation
 - **Database persistence** — SQLite via SQLAlchemy ORM; four tables: users, sessions, messages, contact submissions
@@ -22,7 +22,7 @@ A full-stack web application built for learning and practising **FastAPI** and *
 | Backend | Python, FastAPI, Uvicorn |
 | Database | SQLite, SQLAlchemy, Alembic |
 | Authentication | JWT (python-jose), bcrypt (passlib) |
-| AI | Anthropic Claude API |
+| AI | Groq API |
 | Google OAuth | Authlib, HTTPX |
 | Frontend | HTML, CSS, Vanilla JS |
 
@@ -133,8 +133,7 @@ Open `.env` and fill in the required values:
 
 ```env
 # Required
-SECRET_KEY=your-long-random-secret        # generate with: python -c "import secrets; print(secrets.token_hex(32))"
-GEMINI_API_KEY=sk-ant-...
+GROQ_API_KEY=sk-ant-...
 
 # Optional — Google OAuth (see section below)
 GOOGLE_CLIENT_ID=
@@ -183,7 +182,7 @@ python3 -m http.server 5500
 | POST | `/api/sessions/` | Yes | Create a new journal session |
 | GET | `/api/sessions/{id}` | Yes | Get session with full message history |
 | DELETE | `/api/sessions/{id}` | Yes | Delete a session and its messages |
-| POST | `/api/chat/{session_id}` | Yes | Send a message; get Claude's reply |
+| POST | `/api/chat/{session_id}` | Yes | Send a message; get Groq's reply |
 | POST | `/api/contact/` | No | Submit contact form |
 | GET | `/api/contact/` | Yes | List all contact submissions |
 

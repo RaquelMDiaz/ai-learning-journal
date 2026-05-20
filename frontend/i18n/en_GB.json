@@ -29,7 +29,7 @@
   "journal_send": "Send",
   "journal_back": "← Back to sessions",
   "journal_you": "You",
-  "journal_assistant": "Gemini",
+  "journal_assistant": "Groq",
 
   "contact_title": "Get in touch",
   "contact_name": "Your name",

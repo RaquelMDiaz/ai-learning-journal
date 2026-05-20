@@ -13,7 +13,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="AI Learning Journal API",
-    description="Personal AI-powered learning journal — FastAPI + SQLite + Claude.",
+    description="Personal AI-powered learning journal — FastAPI + SQLite + Groq.",
     version="1.0.0",
 )
 
