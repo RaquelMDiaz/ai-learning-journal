@@ -1,14 +1,13 @@
 """
 routers/chat.py
 ---------------
-AI chat endpoint — protected, saves full conversation history per session.
+AI chat endpoint — uses Google Gemini, saves full conversation history per session.
 """
 
-import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-import anthropic
+import google.generativeai as genai
 
 from app.database import get_db
 from app.models.session import JournalSession
@@ -48,8 +47,8 @@ def chat(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
 
-    if not settings.ANTHROPIC_API_KEY:
-        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not set.")
+    if not settings.GEMINI_API_KEY:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not set.")
 
     # Save user message
     user_msg = Message(session_id=session_id, role="user", content=payload.content)
@@ -63,23 +62,34 @@ def chat(
         .order_by(Message.created_at)
         .all()
     )
-    claude_messages = [{"role": m.role, "content": m.content} for m in history]
 
-    # Call Claude
-    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-    response = client.messages.create(
-        model="claude-opus-4-5",
-        max_tokens=1024,
-        system=(
+    # Gemini uses 'model' instead of 'assistant' for the AI role
+    # and requires history and the new message to be separated
+    gemini_history = [
+        {
+            "role": "user" if m.role == "user" else "model",
+            "parts": [m.content]
+        }
+        for m in history[:-1]  # all messages except the last (which we just added)
+    ]
+
+    # Configure Gemini
+    genai.configure(api_key=settings.GEMINI_API_KEY)
+    model = genai.GenerativeModel(
+        model_name="gemini-2.0-flash",
+        system_instruction=(
             f"You are a helpful learning assistant for {current_user.name}. "
             f"The topic of this journal session is: '{session.topic}'. "
             "Help the user understand, explore, and reflect on this topic."
-        ),
-        messages=claude_messages,
+        )
     )
-    reply_text = response.content[0].text
 
-    # Save Claude reply
+    # Start chat with history and send the latest message
+    chat_session = model.start_chat(history=gemini_history)
+    response = chat_session.send_message(payload.content)
+    reply_text = response.text
+
+    # Save Gemini's reply
     assistant_msg = Message(session_id=session_id, role="assistant", content=reply_text)
     db.add(assistant_msg)
     db.commit()

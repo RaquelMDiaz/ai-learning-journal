@@ -18,7 +18,7 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
     # ── Anthropic ────────────────────────────────────────────────────────────
-    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 
     # ── Google OAuth (optional) ──────────────────────────────────────────────
     # Register at: https://console.cloud.google.com/apis/credentials

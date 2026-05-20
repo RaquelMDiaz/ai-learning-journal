@@ -134,7 +134,7 @@ Open `.env` and fill in the required values:
 ```env
 # Required
 SECRET_KEY=your-long-random-secret        # generate with: python -c "import secrets; print(secrets.token_hex(32))"
-ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=sk-ant-...
 
 # Optional — Google OAuth (see section below)
 GOOGLE_CLIENT_ID=
