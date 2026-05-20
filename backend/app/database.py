@@ -12,13 +12,14 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # SQLite file will be created at backend/journal.db
 # For PostgreSQL later, swap this for:
 #   postgresql+psycopg2://user:password@localhost/dbname
-DATABASE_URL = "sqlite:///./journal.db"
+import os
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./journal.db")
 
 engine = create_engine(
     DATABASE_URL,
     # Required for SQLite only — allows the same connection to be used
     # across multiple threads (FastAPI uses a thread pool)
-    connect_args={"check_same_thread": False},
+    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 )
 
 # Each instance of SessionLocal is a database session
