@@ -19,7 +19,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5500",   # local dev
+        "https://ai-learning-journal-lake.vercel.app",  # production
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
