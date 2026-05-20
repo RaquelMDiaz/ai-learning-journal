@@ -243,7 +243,7 @@ Important: since the nature of this app is purely for personal learning purposes
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/assisted-ai-learning-app.git
+git clone https://github.com/RaquelMDiaz/ai-learning-journal.git
 cd assisted-ai-learning-app
 ```
 
