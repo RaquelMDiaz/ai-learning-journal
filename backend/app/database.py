@@ -15,6 +15,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./journal.db")
 
+# Railway provides postgres:// but SQLAlchemy needs postgresql+psycopg2://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
 engine = create_engine(
     DATABASE_URL,
     # Required for SQLite only — allows the same connection to be used
