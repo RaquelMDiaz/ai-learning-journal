@@ -222,13 +222,166 @@ Translation strings live in `frontend/i18n/`. To add a new language, copy one of
 
 ---
 
-## Planned Next Steps
+## Production environment
 
-- [ ] Migrate frontend to React
-- [ ] Add admin role for managing contact submissions
-- [ ] Deploy backend to Railway or Render
-- [ ] Deploy frontend to Netlify or Vercel
-- [ ] Add email notifications for contact form submissions
+- Frontend deployment done with Vercel (https://ai-learning-journal-lake.vercel.app/)
+- Backend deployment done with Railway (https://ai-learning-journal-production.up.railway.app/)
+
+Important: since the nature of this app is purely for personal learning purposes, Vercel and Railway are being run on free tiers. Hence, certain limitations might be encountered when accessing the frontend URL. An alternative, is to run this app locally. The following section details the steps to do so.
+
+## Running the App Locally
+
+### Prerequisites
+
+- Python 3.11 or higher
+- A [Groq API key](https://console.groq.com) (free, no credit card required)
+- Git
+- A Google account (optional, only needed for Google OAuth)
+
+---
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/assisted-ai-learning-app.git
+cd assisted-ai-learning-app
+```
+
+---
+
+### 2. Set up the backend
+
+**Create and activate a virtual environment:**
+
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Install dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Configure environment variables:**
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in the required values:
+
+```env
+# Generate with: python3 -c "import secrets; print(secrets.token_hex(32))"
+SECRET_KEY=your-generated-secret-key
+
+GROQ_API_KEY=your-groq-api-key
+
+# Optional — only needed for Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
+
+FRONTEND_URL=http://localhost:5500
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+```
+
+**Create the database:**
+
+```bash
+alembic upgrade head
+```
+
+This creates a `journal.db` file with all required tables.
+
+**Start the backend server:**
+
+```bash
+uvicorn main:app --reload
+```
+
+The API is now running at `http://localhost:8000`.
+Interactive API docs are available at `http://localhost:8000/docs`.
+
+---
+
+### 3. Set up the frontend
+
+Open a **second terminal** and navigate to the frontend folder:
+
+```bash
+cd assisted-ai-learning-app/frontend
+python3 -m http.server 5500
+```
+
+The frontend is now running at `http://localhost:5500`.
+
+---
+
+### 4. Open the app
+
+Go to `http://localhost:5500` in your browser.
+
+---
+
+### 5. Stopping the servers
+
+In each terminal, press `Ctrl+C` to stop the server.
+
+---
+
+### Daily development workflow
+
+Every time you come back to work on the project, follow these steps:
+
+**Terminal 1 — backend:**
+
+```bash
+cd assisted-ai-learning-app/backend
+source venv/bin/activate
+uvicorn main:app --reload
+```
+
+**Terminal 2 — frontend:**
+
+```bash
+cd assisted-ai-learning-app/frontend
+python3 -m http.server 5500
+```
+
+Then open `http://localhost:5500` in your browser.
+
+---
+
+### Google OAuth setup (optional)
+
+If you want to enable "Continue with Google" login:
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) → **APIs & Services** → **Credentials**
+2. Create an **OAuth 2.0 Client ID** (Web application)
+3. Add `http://localhost:5500` to **Authorised JavaScript origins**
+4. Add `http://localhost:8000/api/auth/google/callback` to **Authorised redirect URIs**
+5. Copy the Client ID and Secret into your `.env` file
+6. Restart the backend server
+
+---
+
+### Troubleshooting
+
+**Translations not showing** — make sure you are serving the frontend via `python3 -m http.server 5500` and not opening `index.html` directly in the browser.
+
+**"Address already in use" error** — a previous server is still running on that port. Kill it with:
+
+```bash
+lsof -ti:5500 | xargs kill -9   # for the frontend
+lsof -ti:8000 | xargs kill -9   # for the backend
+```
+
+**Changes not reflecting in the browser** — clear the browser cache or open the page in an incognito window.
+
+**Database issues** — if you need to reset the database, delete `backend/journal.db` and run `alembic upgrade head` again. Note this will erase all data.
 
 ---
 
